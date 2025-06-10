@@ -1,3 +1,4 @@
+import numpy as np
 def do_aperture_photometry(
     image,
     positions,
@@ -181,7 +182,11 @@ def generate_light_curve(
         )
         flux = phot[0]['net_flux']
         times.append(time)
-        fluxes.append(flux)
+        fluxes.append(float(flux))
+
+    # Normalize the fluxes
+    median_flux = np.median(fluxes)
+    fluxes = [f / median_flux for f in fluxes]
 
     table = Table([times, fluxes], names=("time", "flux"))
     csv_path = os.path.join(directory, f"{output_basename}.csv")
@@ -212,9 +217,9 @@ if __name__ == "__main__":
     generate_light_curve(
         directory="reductions/TOI-1199",
         position=TOI_1199_pos,
-        aperture_radius=7,
-        sky_radius_in=12,
-        sky_annulus_width=6,
+        aperture_radius=6,
+        sky_radius_in=10,
+        sky_annulus_width=5,
         output_basename="toi1199_lightcurve"
     )
 
